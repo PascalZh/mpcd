@@ -52,24 +52,4 @@ def get_xyz_array(pc_data, dtype=np.float32):
     xyz[:,2] = pc_data['z']
     return xyz
 
-def get_xyz_viewpoint_array(pc_data, dtype=np.float32):
-    """ get Nx3 array from structured array """
-    if pc_data.ndim==2 and pc_data.shape[0]==1:
-        pc_data = pc_data.squeeze()
-    xyz = np.empty((len(pc_data),3), dtype=dtype)
-    xyz[:,0] = pc_data['x_origin']
-    xyz[:,1] = pc_data['y_origin']
-    xyz[:,2] = pc_data['z_origin']
-    return xyz
-
-def get_xyzl_array(pc_data, dtype=np.float32):
-    if pc_data.ndim==2 and pc_data.shape[0]==1:
-        pc_data = pc_data.squeeze()
-    xyzl = np.empty((len(pc_data),4), dtype=dtype)
-    xyzl[:,0] = pc_data['x']
-    xyzl[:,1] = pc_data['y']
-    xyzl[:,2] = pc_data['z']
-    xyzl[:,3] = pc_data['label']
-    return xyzl
-
 

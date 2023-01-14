@@ -65,4 +65,4 @@ VERSION = __version__
 PACKAGES = ['mpcd',
             'mpcd.tests']
 PACKAGE_DATA = {'mpcd': [pjoin('data', '*')]}
-INSTALL_REQUIRES = ["numpy", "python-lzf"]
+INSTALL_REQUIRES = ["numpy", "python-lzf","Pillow","opencv-python"]

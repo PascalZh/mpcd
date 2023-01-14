@@ -1,1 +1,4 @@
-from mpcd import *
+from mpcd.mpcd import PointCloud
+
+__all__ = ['PointCloud']
+
