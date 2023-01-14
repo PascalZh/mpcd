@@ -18,5 +18,5 @@ classifiers = [
 ]
 
 [project.urls]
-"Homepage" = ""
-"Bug Tracker" = ""
+"Homepage" = "https://github.com/BossaMelon/mpcd"
+"Bug Tracker" = "https://github.com/BossaMelon/mpcd/issues"
