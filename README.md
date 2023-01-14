@@ -24,7 +24,7 @@ pc.save_pcd('bar.pcd', compression='binary_compressed')
 
 I want to congratulate you / insult you
 ----------
-My email is `dimatura@cmu.edu`.
+My email is `mail@yuehao.wang`.
 
-Copyright (C) 2015 Daniel Maturana
+Copyright (C) 2023 Yuehao Wang
 # mpcd
