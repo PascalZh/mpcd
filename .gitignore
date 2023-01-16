@@ -10,4 +10,3 @@ include
 .idea
 pip-selfcheck.json
 .pytest_cache/
-/push_pypi.sh

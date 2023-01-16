@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "mpcd"
-version = "0.0.4"
+version = "0.0.9"
 authors = [
   { name="Yuehao Wang", email="mail@yuehao.wang" },
 ]
@@ -15,6 +15,14 @@ classifiers = [
     "Programming Language :: Python :: 3",
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
+]
+
+
+dependencies = [
+  'numpy',
+  'python-lzf',
+  'Pillow',
+  'opencv-python'
 ]
 
 [project.urls]

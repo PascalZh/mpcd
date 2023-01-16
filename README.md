@@ -5,7 +5,7 @@
 Pure Python module to read and write point clouds stored in the [PCD file
 format](http://pointclouds.org/documentation/tutorials/pcd_file_format.php),
 used by the [Point Cloud Library](http://pointclouds.org/).
-Folk from pypcd: https://github.com/dimatura/pypcd
+Fork from pypcd: https://github.com/dimatura/pypcd
 
 ```python
 import mpcd

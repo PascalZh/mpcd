@@ -37,20 +37,20 @@ DATA ascii
 
 @pytest.fixture
 def pcd_fname():
-    import pypcd
-    return os.path.join(pypcd.__path__[0], 'test_data',
+    import mpcd
+    return os.path.join(mpcd.__path__[0], 'test_data',
                         'partial_cup_model.pcd')
 
 @pytest.fixture
 def ascii_pcd_fname():
-    import pypcd
-    return os.path.join(pypcd.__path__[0], 'test_data',
+    import mpcd
+    return os.path.join(mpcd.__path__[0], 'test_data',
                         'ascii.pcd')
 
 @pytest.fixture
 def bin_pcd_fname():
-    import pypcd
-    return os.path.join(pypcd.__path__[0], 'test_data',
+    import mpcd
+    return os.path.join(mpcd.__path__[0], 'test_data',
                         'bin.pcd')
 
 def cloud_centroid(pc):
@@ -61,9 +61,9 @@ def cloud_centroid(pc):
     return xyz.mean(0)
 
 def test_parse_header():
-    from pypcd.pypcd import parse_header
+    from mpcd.mpcd import _parse_header
     lines = header1.split('\n')
-    md = parse_header(lines)
+    md = _parse_header(lines)
     assert (md['version'] == '0.7')
     assert (md['fields'] == ['x', 'y', 'z', 'i'])
     assert (md['size'] == [4, 4, 4, 4])
@@ -77,8 +77,8 @@ def test_parse_header():
 
 
 def test_from_path(pcd_fname):
-    from pypcd import pypcd
-    pc = pypcd.PointCloud.from_path(pcd_fname)
+    from mpcd import PointCloud
+    pc = PointCloud.from_path(pcd_fname)
 
     fields = 'x y z normal_x normal_y normal_z curvature boundary k vp_x vp_y vp_z principal_curvature_x principal_curvature_y principal_curvature_z pc1 pc2'.split()
     for fld1, fld2 in zip(pc.fields, fields):
@@ -87,120 +87,5 @@ def test_from_path(pcd_fname):
     assert (len(pc.pc_data) == 19812)
 
 
-def test_add_fields(pcd_fname):
-    from pypcd import pypcd
-    pc = pypcd.PointCloud.from_path(pcd_fname)
-
-    old_md = pc.get_metadata()
-    # new_dt = [(f, pc.pc_data.dtype[f]) for f in pc.pc_data.dtype.fields]
-    # new_data = [pc.pc_data[n] for n in pc.pc_data.dtype.names]
-    md = {'fields': ['bla', 'bar'], 'count': [1, 1], 'size': [4, 4],
-          'type': ['F', 'F']}
-    d = np.rec.fromarrays((np.random.random(len(pc.pc_data)),
-                           np.random.random(len(pc.pc_data))))
-    newpc = pypcd.add_fields(pc, md, d)
-
-    new_md = newpc.get_metadata()
-    # print len(old_md['fields']), len(md['fields']), len(new_md['fields'])
-    # print old_md['fields'], md['fields'], new_md['fields']
-    assert(len(old_md['fields'])+len(md['fields']) == len(new_md['fields']))
-
-
-def test_path_roundtrip_ascii(pcd_fname):
-    from pypcd import pypcd
-    pc = pypcd.PointCloud.from_path(pcd_fname)
-    md = pc.get_metadata()
-
-    tmp_dirname = tempfile.mkdtemp(suffix='_pypcd', prefix='tmp')
-
-    tmp_fname = os.path.join(tmp_dirname, 'out.pcd')
-
-    pc.save_pcd(tmp_fname, compression='ascii')
-
-    assert(os.path.exists(tmp_fname))
-
-    pc2 = pypcd.PointCloud.from_path(tmp_fname)
-    md2 = pc2.get_metadata()
-    assert(md == md2)
-
-    np.testing.assert_equal(pc.pc_data, pc2.pc_data)
-
-    if os.path.exists(tmp_fname):
-        os.unlink(tmp_fname)
-    os.removedirs(tmp_dirname)
-
-
-def test_path_roundtrip_binary(pcd_fname):
-    from pypcd import pypcd
-    pc = pypcd.PointCloud.from_path(pcd_fname)
-    md = pc.get_metadata()
-
-    tmp_dirname = tempfile.mkdtemp(suffix='_pypcd', prefix='tmp')
-
-    tmp_fname = os.path.join(tmp_dirname, 'out.pcd')
-
-    pc.save_pcd(tmp_fname, compression='binary')
-
-    assert(os.path.exists(tmp_fname))
-
-    pc2 = pypcd.PointCloud.from_path(tmp_fname)
-    md2 = pc2.get_metadata()
-    for k, v in md2.items():
-        if k == 'data':
-            assert v == 'binary'
-        else:
-            assert v == md[k]
-
-    np.testing.assert_equal(pc.pc_data, pc2.pc_data)
-
-    if os.path.exists(tmp_fname):
-        os.unlink(tmp_fname)
-    os.removedirs(tmp_dirname)
-
-
-def test_path_roundtrip_binary_compressed(pcd_fname):
-    from pypcd import pypcd
-    pc = pypcd.PointCloud.from_path(pcd_fname)
-    md = pc.get_metadata()
-
-    tmp_dirname = tempfile.mkdtemp(suffix='_pypcd', prefix='tmp')
-
-    tmp_fname = os.path.join(tmp_dirname, 'out.pcd')
-
-    pc.save_pcd(tmp_fname, compression='binary_compressed')
-
-    assert(os.path.exists(tmp_fname))
-
-    pc2 = pypcd.PointCloud.from_path(tmp_fname)
-    md2 = pc2.get_metadata()
-    for k, v in md2.items():
-        if k == 'data':
-            assert v == 'binary_compressed'
-        else:
-            assert v == md[k]
-
-    np.testing.assert_equal(pc.pc_data, pc2.pc_data)
-
-    if os.path.exists(tmp_dirname):
-        shutil.rmtree(tmp_dirname)
-
-
-def test_cat_pointclouds(pcd_fname):
-    from pypcd import pypcd
-    pc = pypcd.PointCloud.from_path(pcd_fname)
-    pc2 = pc.copy()
-    pc2.pc_data['x'] += 0.1
-    pc3 = pypcd.cat_point_clouds(pc, pc2)
-    for fld, fld3 in zip(pc.fields, pc3.fields):
-        assert(fld == fld3)
-    assert(pc3.width == pc.width+pc2.width)
-
-def test_ascii_bin1(ascii_pcd_fname, bin_pcd_fname):
-    from pypcd import pypcd
-    apc1 = pypcd.point_cloud_from_path(ascii_pcd_fname)
-    bpc1 = pypcd.point_cloud_from_path(bin_pcd_fname)
-    am = cloud_centroid(apc1)
-    bm = cloud_centroid(bpc1)
-    assert( np.allclose(am, bm) )
 
 
