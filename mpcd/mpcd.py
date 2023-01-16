@@ -433,6 +433,10 @@ class PointCloud:
             _point_cloud_to_fileobj(self, f, compression)
 
     def coor_trans(self, extr_mat):
+        if extr_mat.__class__.__name__ != "ndarray":
+            extr_mat = np.array(extr_mat)
+
+        # assignment destination is read-only, so need copy
         pc_data = self.pc_data.copy()
         assert "x" in self.fields and "y" in self.fields and "z" in self.fields
 
@@ -440,7 +444,6 @@ class PointCloud:
         y = pc_data["y"]
         z = pc_data["z"]
         xyz_1 = np.vstack((x, y, z, np.ones((1, x.shape[0]))))
-        # xyz_1 = np.vstack([xyz, np.ones((1, xyz.shape[1]))])
         xyz_1_trans = np.dot(extr_mat, xyz_1)
         pc_trans = np.ascontiguousarray((xyz_1_trans[:3]).T)
 
@@ -454,6 +457,47 @@ class PointCloud:
         new_pc_data = np.copy(self.pc_data)
         new_metadata = self.get_metadata()
         return PointCloud(new_metadata, new_pc_data)
+
+    def downsample(self, sample_ratio):
+        pc_data = self.pc_data.copy()
+        self.pc_data = pc_data[::sample_ratio]
+        self._adjust_field()
+        return self
+
+    def _parse_condition(self, condition_str):
+        operator_list = ["<=", ">=", "==", "!=", "<", ">"]
+        condition_str = condition_str.replace(" ", "")
+        for operator in operator_list:
+            if operator in condition_str:
+                logic = operator
+                break
+        else:
+            raise ValueError("Invalid logic operator")
+
+        field = condition_str.split(operator)[0]
+        value = condition_str.split(operator)[1]
+        if field+logic+value!=condition_str:
+            raise ValueError('condition incorrect')
+        assert field and logic and value, 'condition incorrect'
+        return field, logic, value
+
+    def filter_by_condition(self, conditions):
+        # keep the points that satisfy the condition
+        if not isinstance(conditions, list):
+            conditions = [conditions]
+        for condition in conditions:
+            field, logic, value = self._parse_condition(condition)
+            condition=f"self.pc_data['{field}'] {logic} {value}"
+            pc_data = self.pc_data[eval(condition)]
+            self.pc_data = pc_data
+        self._adjust_field()
+        return self
+
+
+    def _adjust_field(self):
+        self.points = self.pc_data.shape[0]
+        self.width = self.points
+        self.height = 1
 
     @staticmethod
     def from_path(fname):

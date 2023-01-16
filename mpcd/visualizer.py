@@ -193,7 +193,7 @@ class PointCloudVisualizer:
 
     def draw_distance_marker(self, image, ranges_value=None):
         if not ranges_value:
-            ranges_value = [50, 100, 150]
+            ranges_value = [40, 80, 120]
         color = (255, 255, 255)
         thickness = 1
         center_coordinates = tuple([int(self.IMAGE_TRANS[0]), int(self.IMAGE_TRANS[1])])
@@ -210,6 +210,11 @@ class PointCloudVisualizer:
         path = os.path.join(save_path)
         img_bgr = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
         cv2.imwrite(path, img_bgr)
+
+    def draw_gt_bbox(self, image, gt_boxes, color=(255, 255, 255), line=1):
+        pass
+
+
 
     def draw_bbox(self, image, obj_corners, color=(255, 255, 255), line=1):
         b = obj_corners[:8].reshape([-1, 2])
