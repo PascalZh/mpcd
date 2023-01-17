@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "mpcd"
-version = "0.1.0"
+version = "0.1.1"
 authors = [
   { name="Yuehao Wang", email="mail@yuehao.wang" },
 ]
@@ -23,7 +23,7 @@ dependencies = [
   'python-lzf',
   'Pillow',
   'opencv-python',
-  'tqdm
+  'tqdm'
 ]
 
 [project.urls]

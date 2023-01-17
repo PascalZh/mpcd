@@ -10,3 +10,4 @@ include
 .idea
 pip-selfcheck.json
 .pytest_cache/
+demo_local.py

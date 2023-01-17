@@ -371,7 +371,7 @@ class PointCloud:
     def save_ascii(self, fname):
         self.save_pcd(fname, "ascii")
 
-    def draw_pcloud(
+    def draw_bev(
         self,
         color="gray",
         r=0,
@@ -394,6 +394,26 @@ class PointCloud:
             save_path,
         )
         return draw
+
+    @staticmethod
+    def draw_bev_overlay(
+        pc_tuple,
+        draw_distance_marker=True,
+        draw_orin=True,
+        show=True,
+        auto_rot=True,
+        save=False,
+        save_path=None):
+        return PointCloud.vis.draw_pc_overlay(
+            pc_tuple,
+            draw_distance_marker,
+            draw_orin,
+            show,
+            auto_rot,
+            save,
+            save_path,
+        )
+
 
     def to_ndarray(self, fields=None):
         if not fields:
